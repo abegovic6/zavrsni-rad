@@ -1,0 +1,17 @@
+.buttonstyle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #F2F4F3;
+    -fx-background-color: #317c64;
+    -fx-width: "1.7976931348623157E308";
+}
+
+.buttonstylesecondary {
+    -fx-font-size: 14px;
+    -fx-text-fill: #F2F4F3;
+    -fx-background-color: #6ea392 ;
+    -fx-width: "1.7976931348623157E308";
+}
+
+.padding {
+    -fx-padding: 10;
+}

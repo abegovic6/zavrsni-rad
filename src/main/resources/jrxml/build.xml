@@ -1,0 +1,15 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<project name = "JasperReportTest" default = "viewDesignXML" basedir = ".">
+
+    <import file = "baseBuild.xml" />
+    <target name = "viewDesignXML" description = "Design viewer is
+      launched to preview the JXML report design.">
+
+        <java classname = "net.sf.jasperreports.view.JasperDesignViewer" fork = "true">
+            <arg value = "-XML" />
+            <arg value = "-F${file.name}.jrxml" />
+            <classpath refid = "classpath" />
+        </java>
+    </target>
+
+</project>
