@@ -1,0 +1,79 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN"
+        "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+
+<jasperReport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
+   http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="jasper_report_template" language="groovy" pageWidth="595"
+              pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20"
+              topMargin="20" bottomMargin="20">
+
+    <!-- Parameters -->
+    <parameter name="queryStringPar" class="java.lang.String"/>
+
+    <!-- Query string -->
+<!--    <queryString>-->
+<!--        <![CDATA[SELECT country as col1, name as col2 FROM city]]>-->
+<!--    </queryString>-->
+
+
+<!--    &lt;!&ndash; Fields &ndash;&gt;-->
+<!--    <field name="col1" class="java.lang.String">-->
+<!--        <fieldDescription><![CDATA[]]></fieldDescription>-->
+<!--    </field>-->
+<!--    <field name="col2" class="java.lang.String">-->
+<!--        <fieldDescription><![CDATA[]]></fieldDescription>-->
+<!--    </field>-->
+
+    <title>
+        <band height="50">
+        </band>
+    </title>
+    <pageHeader>
+        <band height="50">
+        </band>
+    </pageHeader>
+    <columnHeader>
+        <band height="30">
+            <staticText>
+                <reportElement mode="Opaque" x="0" y="0" width="535" height="14" backcolor="#E5ECF9"/>
+                <box>
+                    <bottomPen lineWidth="0.25" lineColor="#CCCCCC"/>
+                </box>
+                <textElement/>
+                <text><![CDATA[]]> </text>
+            </staticText>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="20">
+            <staticText>
+                <reportElement mode="Opaque" x="0" y="0" width="535" height="14" backcolor="#E5ECF9"/>
+                <box>
+                    <bottomPen lineWidth="0.25" lineColor="#CCCCCC"/>
+                </box>
+                <textElement/>
+                <text><![CDATA[]]> </text>
+            </staticText>
+        </band>
+    </detail>
+    <columnFooter>
+        <band height="30">
+        </band>
+    </columnFooter>
+    <pageFooter>
+        <band height="50">
+        </band>
+    </pageFooter>
+    <lastPageFooter>
+        <band height="50">
+        </band>
+    </lastPageFooter>
+    <summary>
+        <band height="50">
+        </band>
+    </summary>
+
+</jasperReport>

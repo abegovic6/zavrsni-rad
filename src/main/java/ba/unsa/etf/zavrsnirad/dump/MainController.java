@@ -1,5 +1,9 @@
-package ba.unsa.etf.zavrsnirad;
+package ba.unsa.etf.zavrsnirad.dump;
 
+import ba.unsa.etf.zavrsnirad.utils.DatabaseConnection;
+import ba.unsa.etf.zavrsnirad.dump.DynamicColumnDataSource;
+import ba.unsa.etf.zavrsnirad.dump.DynamicReportBuilder;
+import ba.unsa.etf.zavrsnirad.dump.PrintReport;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
@@ -14,7 +18,7 @@ public class MainController {
     public void generate() {
         try {
             var database = DatabaseConnection.getInstance();
-            new PrintReport ().showReport(database.getConnection());
+            new PrintReport().showReport(database.getConnection());
         } catch (JRException e1) {
             e1.printStackTrace();
         }

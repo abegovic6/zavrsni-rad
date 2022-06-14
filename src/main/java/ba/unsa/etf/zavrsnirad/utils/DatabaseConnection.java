@@ -1,4 +1,4 @@
-package ba.unsa.etf.zavrsnirad;
+package ba.unsa.etf.zavrsnirad.utils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

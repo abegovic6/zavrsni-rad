@@ -1,4 +1,4 @@
-package ba.unsa.etf.zavrsnirad;
+package ba.unsa.etf.zavrsnirad.dump;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;

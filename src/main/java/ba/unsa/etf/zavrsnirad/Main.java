@@ -1,5 +1,7 @@
 package ba.unsa.etf.zavrsnirad;
 
+import ba.unsa.etf.zavrsnirad.controller.StartController;
+import ba.unsa.etf.zavrsnirad.utils.MyResourceBundle;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
