@@ -4,6 +4,7 @@ import ba.unsa.etf.zavrsnirad.dump.CreateJRXMLReport;
 import ba.unsa.etf.zavrsnirad.utils.DatabaseConnection;
 import ba.unsa.etf.zavrsnirad.utils.FilePath;
 import ba.unsa.etf.zavrsnirad.dump.PrintReport;
+import ba.unsa.etf.zavrsnirad.utils.JRXMLCreatorFromHTML;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -18,6 +19,7 @@ import javafx.scene.web.HTMLEditor;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.util.JRLoader;
 
+import javax.xml.stream.XMLStreamException;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -71,7 +73,7 @@ public class HtmlController {
             @Override public void handle(ActionEvent arg0) {
                 StringBuilder contentBuilder = new StringBuilder();
                 try {
-                    BufferedReader in = new BufferedReader(new FileReader(FilePath.JRXML_SRC_FILE_NAME.getFullPath()));
+                    BufferedReader in = new BufferedReader(new FileReader(FilePath.JRXML_DESC_FILE_NAME.getFullPath()));
                     String str;
                     while ((str = in.readLine()) != null) {
                         contentBuilder.append(str);
@@ -96,12 +98,17 @@ public class HtmlController {
             }
         });
 
-        Button produceXMLCode = new Button("Produce XML Code");
+        Button produceXMLCode = new Button("Get styles");
         produceXMLCode.getStyleClass().add("buttonstyle");
         produceXMLCode.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent arg0) {
-
-                htmlCode.setText(CreateJRXMLReport.createReport(htmlEditor.getHtmlText()));
+                try {
+                    new JRXMLCreatorFromHTML(htmlEditor.getHtmlText(), FilePath.JRXML_DESC_FILE_NAME.getFullPath(), "C:/Users/pp/Desktop/destination.jrxml");
+                } catch (XMLStreamException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
         HBox hBox = new HBox();
@@ -110,26 +117,6 @@ public class HtmlController {
         hBox.setAlignment(Pos.CENTER);
         hBox.setPadding(new Insets(10, 10, 10, 10));
         rightVBox.getChildren().addAll(htmlEditor, hBox, scrollPane);
-    }
-
-    private void viewJasper() {
-//        try {
-//            // Paths
-//            String reportSrcJrxmlFile = FilePath.JRXML_SRC_FILE_NAME.getFullPath();
-//            String reportSrcJasperFile = FilePath.JAPSER_SRC_FILE_NAME.getFullPath();
-//
-//
-//            JasperCompileManager.compileReportToFile(reportSrcJrxmlFile, reportSrcJasperFile);
-//            JasperReport jasperReport = (JasperReport) JRLoader.loadObjectFromFile(reportSrcJasperFile);
-//
-//            JasperPrint jasperPrint
-//                    = JasperFillManager.fillReport(jasperReport, new HashMap<>(), DatabaseConnection.getInstance().getConnection());
-//
-//            JasperViewer.viewReport(jasperPrint, false);
-//            //viewer.setVisible(true);
-//        } catch (JRException e) {
-//            e.printStackTrace();
-//        }
     }
 
     public void generateHtmlCodeFromJRXML() {

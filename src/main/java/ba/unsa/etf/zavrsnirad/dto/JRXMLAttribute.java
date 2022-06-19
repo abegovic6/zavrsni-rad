@@ -38,7 +38,15 @@ public class JRXMLAttribute {
             attributeList.add(xmlEventFactory.createAttribute(attribute.id, attribute.value));
         }
         return  attributeList.iterator();
-
-
     }
+
+    @Override
+    public String toString() {
+        return "JRXMLAttribute{" +
+                "id='" + id + '\'' +
+                ", value='" + value + '\'' +
+                '}';
+    }
+
+    //    public static
 }

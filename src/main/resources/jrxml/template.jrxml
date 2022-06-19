@@ -28,7 +28,8 @@
 <!--    </field>-->
 
     <title>
-        <band height="50">
+        <band height="79" splitType="Stretch">
+
         </band>
     </title>
     <pageHeader>
@@ -37,26 +38,26 @@
     </pageHeader>
     <columnHeader>
         <band height="30">
-            <staticText>
-                <reportElement mode="Opaque" x="0" y="0" width="535" height="14" backcolor="#E5ECF9"/>
-                <box>
-                    <bottomPen lineWidth="0.25" lineColor="#CCCCCC"/>
-                </box>
-                <textElement/>
-                <text><![CDATA[]]> </text>
-            </staticText>
+<!--            <staticText>-->
+<!--                <reportElement mode="Opaque" x="0" y="0" width="535" height="14" backcolor="#E5ECF9"/>-->
+<!--                <box>-->
+<!--                    <bottomPen lineWidth="0.25" lineColor="#CCCCCC"/>-->
+<!--                </box>-->
+<!--                <textElement/>-->
+<!--                <text><![CDATA[]]> </text>-->
+<!--            </staticText>-->
         </band>
     </columnHeader>
     <detail>
         <band height="20">
-            <staticText>
-                <reportElement mode="Opaque" x="0" y="0" width="535" height="14" backcolor="#E5ECF9"/>
-                <box>
-                    <bottomPen lineWidth="0.25" lineColor="#CCCCCC"/>
-                </box>
-                <textElement/>
-                <text><![CDATA[]]> </text>
-            </staticText>
+<!--            <staticText>-->
+<!--                <reportElement mode="Opaque" x="0" y="0" width="535" height="14" backcolor="#E5ECF9"/>-->
+<!--                <box>-->
+<!--                    <bottomPen lineWidth="0.25" lineColor="#CCCCCC"/>-->
+<!--                </box>-->
+<!--                <textElement/>-->
+<!--                <text><![CDATA[]]> </text>-->
+<!--            </staticText>-->
         </band>
     </detail>
     <columnFooter>
