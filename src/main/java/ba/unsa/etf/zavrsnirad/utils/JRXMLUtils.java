@@ -15,7 +15,9 @@ import java.util.List;
 
 public class JRXMLUtils {
 
-    private static final int PAGE_SIZE = 535;
+    public static final String TITLE_COLOR = "#B0E298";
+    public static final String SUBTITLE_COLOR = "#ffffff";
+    public static final int PAGE_SIZE = 535;
 
     public static final String QUERY_STRING = "queryString";
     public static final String PARAMETAR = "parameter";

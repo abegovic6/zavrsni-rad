@@ -3,19 +3,16 @@ package ba.unsa.etf.zavrsnirad.utils;
 import ba.unsa.etf.zavrsnirad.dto.JRXMLAttribute;
 import ba.unsa.etf.zavrsnirad.dto.JRXMLElement;
 import ba.unsa.etf.zavrsnirad.dto.JRXMLTypes;
-import javafx.event.Event;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.*;
-import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -90,7 +87,7 @@ public class JRXMLCreatorFromHTML {
                     }
 
                     if (Objects.equals(name, JRXMLUtils.TITLE)) {
-                        var copy= createTitle(event, writer);
+                        var copy= createTitle(event, writer, parser);
                         while (parser.hasNext()) {
                             event = parser.nextEvent();
                             if(event.isEndElement()) {
@@ -255,6 +252,41 @@ public class JRXMLCreatorFromHTML {
                 = xmlEventFactory.createStartElement(QName.valueOf(JRXMLUtils.BAND), iterator, titleStartElement.getNamespaces());
         writer.add(bandStartElement);
 
+        iterator
+                = JRXMLAttribute.generateAttributes(List.of(
+                        new JRXMLAttribute("forecolor", "#000000"),
+                        new JRXMLAttribute("height", "2"),
+                        new JRXMLAttribute("width", String.valueOf(515)),
+                        new JRXMLAttribute("x", String.valueOf(0)),
+                        new JRXMLAttribute("y", String.valueOf(height - 3))
+                ),
+                xmlEventFactory);
+        StartElement lineStart = xmlEventFactory.createStartElement(new QName("line"), null, bandStartElement.getNamespaces());
+        writer.add(lineStart);
+
+        StartElement lineStartReport
+                = xmlEventFactory.createStartElement(new QName("reportElement"), iterator, lineStart.getNamespaces());
+        writer.add(lineStartReport);
+
+        EndElement lineEndReport = xmlEventFactory.createEndElement(new QName("reportElement"), lineStartReport.getNamespaces());
+        writer.add(lineEndReport);
+
+        iterator
+                = JRXMLAttribute.generateAttributes(List.of(
+                        new JRXMLAttribute("stretchType", "NoStretch"),
+                        new JRXMLAttribute("pen", "2Point")
+                ),
+                xmlEventFactory);
+        StartElement graphElement
+                = xmlEventFactory.createStartElement(new QName("graphicElement"), iterator, lineEndReport.getNamespaces());
+        writer.add(graphElement);
+
+        EndElement lineGraphEl = xmlEventFactory.createEndElement(new QName("graphicElement"), graphElement.getNamespaces());
+        writer.add(lineGraphEl);
+
+        EndElement lineEnd = xmlEventFactory.createEndElement(new QName("line"), lineGraphEl.getNamespaces());
+        writer.add(lineEnd);
+
         for(int i = 0; i < ReportData.getReportColumns().size(); i++) {
             var column = ReportData.getReportColumns().get(i);
             var jrxmlElement = elements.stream().filter(e ->
@@ -300,19 +332,18 @@ public class JRXMLCreatorFromHTML {
             }
 
         }
-        return max + max / 2;
+        return max + max / 2 + 5;
     }
 
 
-    private XMLEvent createTitle(XMLEvent event, XMLEventWriter writer) throws XMLStreamException {
+    private XMLEvent createTitle(XMLEvent event, XMLEventWriter writer, XMLEventReader parser) throws XMLStreamException {
         StartElement oldStartElement = event.asStartElement();
 
         StartElement titleStartElement
                 = xmlEventFactory.createStartElement(QName.valueOf(JRXMLUtils.TITLE), null, oldStartElement.getNamespaces());
         writer.add(titleStartElement);
 
-        int height = calculateHeight(elements.stream().filter(e -> e.getJrxmlType().equals(JRXMLTypes.JRXML_TITLE)).toList());
-        event = createStaticText(writer, titleStartElement, height, JRXMLTypes.JRXML_TITLE);
+        event = createStaticText(writer, titleStartElement, 79, JRXMLTypes.JRXML_TITLE);
         writer.add(event);
 
         return xmlEventFactory.createEndElement(QName.valueOf(JRXMLUtils.TITLE), event.asEndElement().getNamespaces());
@@ -345,7 +376,6 @@ public class JRXMLCreatorFromHTML {
         StartElement bandStartElement
                 = xmlEventFactory.createStartElement(QName.valueOf(JRXMLUtils.BAND), iterator, titleStartElement.getNamespaces());
         writer.add(bandStartElement);
-
         var staticEvent = createAllStaticFieldsForElement(bandStartElement, writer,
                 elements.stream().filter(e -> e.getJrxmlType().equals(type)).toList());
         writer.add(staticEvent);
@@ -385,7 +415,7 @@ public class JRXMLCreatorFromHTML {
                             new JRXMLAttribute("x", String.valueOf(0)),
                             new JRXMLAttribute("y",
                                     String.valueOf(calculateY(jrxmlElements, i))),
-                            new JRXMLAttribute("width", String.valueOf(555)),
+                            new JRXMLAttribute("width", String.valueOf(JRXMLUtils.PAGE_SIZE)),
                             new JRXMLAttribute("height",
                                     String.valueOf(jrxmlElements.get(i).getHeight()))
                     ),
@@ -407,7 +437,7 @@ public class JRXMLCreatorFromHTML {
         return xmlEventFactory.createEndElement(new QName(JRXMLUtils.STYLE), newStartStyleHeaderElement.getNamespaces());
     }
 
-    public List<JRXMLAttribute> getIteratorForStyle(String styles, String styleName) {
+    public List<JRXMLAttribute> getIteratorForStyle(String styles, String styleName, List<JRXMLAttribute> additional) {
         if(styles == null) return new ArrayList<>();
         var listOfStyles = styles.split(";");
         List<JRXMLAttribute> jrxmlAttributeList = new ArrayList<>();
@@ -421,6 +451,7 @@ public class JRXMLCreatorFromHTML {
         }
         jrxmlAttributeList = JRXMLStyleAttributesCreator.generateStyles(jrxmlAttributeList);
         jrxmlAttributeList.add(new JRXMLAttribute("name", styleName));
+        jrxmlAttributeList.addAll(additional);
         return jrxmlAttributeList;
     }
 
@@ -461,10 +492,12 @@ public class JRXMLCreatorFromHTML {
                 jrxmlElement.setJrxmlType(JRXMLTypes.JRXML_TITLE);
                 jrxmlElement.setStyleName(ReportData.getReportTitleStyleName() + "_" + i);
                 jrxmlElement.setStyleText(spans.get(i).ownText());
-
+                List<JRXMLAttribute> additional = List.of(
+                        new JRXMLAttribute("backcolor", JRXMLUtils.TITLE_COLOR),
+                        new JRXMLAttribute("mode", "Opaque"));
 
                 jrxmlElement.setStyleAttributes(getIteratorForStyle(style + spans.get(i).attr("style"),
-                                ReportData.getReportTitleStyleName() + "_" + i ), xmlEventFactory);
+                                ReportData.getReportTitleStyleName() + "_" + i, additional), xmlEventFactory);
                 elements.add(jrxmlElement);
             }
         }
@@ -481,10 +514,12 @@ public class JRXMLCreatorFromHTML {
                 jrxmlElement.setJrxmlType(JRXMLTypes.JRXML_PAGE_HEADER);
                 jrxmlElement.setStyleName(ReportData.getReportSubTitleStyleName() + "_" + i);
                 jrxmlElement.setStyleText(spans.get(i).ownText());
-
+                List<JRXMLAttribute> additional = List.of(
+                        new JRXMLAttribute("backcolor", JRXMLUtils.SUBTITLE_COLOR),
+                        new JRXMLAttribute("mode", "Opaque"));
 
                 jrxmlElement.setStyleAttributes(getIteratorForStyle(style + spans.get(i).attr("style"),
-                        ReportData.getReportSubTitleStyleName() + "_" + i ), xmlEventFactory);
+                        ReportData.getReportSubTitleStyleName() + "_" + i, additional), xmlEventFactory);
                 elements.add(jrxmlElement);
             }
         }
@@ -500,8 +535,10 @@ public class JRXMLCreatorFromHTML {
             JRXMLElement jrxmlElement = new JRXMLElement();
             jrxmlElement.setJrxmlType(JRXMLTypes.JRXML_COLUMN_HEADER);
             jrxmlElement.setStyleName("header_" + columnHeader.getColumnName());
+            List<JRXMLAttribute> additional = List.of(new JRXMLAttribute("backcolor", "#ffffff"));
+
             jrxmlElement.setStyleAttributes(getIteratorForStyle(style + spans.attr("style"),
-                    jrxmlElement.getStyleName()), xmlEventFactory);
+                    jrxmlElement.getStyleName(), additional), xmlEventFactory);
             jrxmlElement.setStyleText("");
             for (int i = 0; i < spans.size(); i++) {
                 if(spans.get(i).ownText() != null)
@@ -522,8 +559,9 @@ public class JRXMLCreatorFromHTML {
             JRXMLElement jrxmlElement = new JRXMLElement();
             jrxmlElement.setJrxmlType(JRXMLTypes.JRXML_DETAIL);
             jrxmlElement.setStyleName("detail_" + columnHeader.getColumnName());
+            List<JRXMLAttribute> additional = List.of(new JRXMLAttribute("backcolor", "#ffffff"));
             jrxmlElement.setStyleAttributes(getIteratorForStyle(style + spans.attr("style"),
-                    jrxmlElement.getStyleName()), xmlEventFactory);
+                    jrxmlElement.getStyleName(), additional), xmlEventFactory);
             elements.add(jrxmlElement);
         }
     }

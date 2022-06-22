@@ -77,7 +77,7 @@ public class MainController {
             ReportData.setReportQuery(sqlQueryTextArea.getText());
             if(createReport()) {
                 nextWindow();
-            };
+            }
 
         });
         next.setMaxWidth(Double.MAX_VALUE);
@@ -89,7 +89,7 @@ public class MainController {
     }
 
     private boolean createReport() {
-        Connection connection = DatabaseConnection.getInstance().getConnection();
+        Connection connection = DatabaseConnection.getInstance(databaseStringTextField.getText()).getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(ReportData.getReportQuery())){
 
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -120,6 +120,7 @@ public class MainController {
     private void nextWindow() {
         htmlEditor = new HTMLEditor();
         htmlEditor.setPrefHeight(mainVBox.getHeight() * 2 / 3);
+        connectToDatabase();
         generateHtmlCodeFromJRXML();
 
         Button previewJRXML = new Button("Preview JRXML");
@@ -127,7 +128,7 @@ public class MainController {
         previewJRXML.setOnAction(event -> {
             if(produceCode()) {
                 try {
-                    PrintReport.showReport(DatabaseConnection.getInstance().getConnection());
+                    PrintReport.showReport(DatabaseConnection.getInstance(databaseStringTextField.getText()).getConnection());
                 } catch (JRException e) {
                     e.printStackTrace();
                 }
@@ -158,6 +159,9 @@ public class MainController {
         mainVBox.getChildren().addAll(htmlEditor, buttonVBox);
     }
 
+    private void connectToDatabase() {
+    }
+
     private boolean produceCode() {
         try {
             new JRXMLCreatorFromHTML(htmlEditor.getHtmlText(),
@@ -180,7 +184,8 @@ public class MainController {
             JasperReport jasperReport = (JasperReport) JRLoader.loadObjectFromFile(reportSrcJasperFile);
 
             JasperPrint jasperPrint
-                    = JasperFillManager.fillReport(jasperReport, new HashMap<>(), DatabaseConnection.getInstance().getConnection());
+                    = JasperFillManager.fillReport(jasperReport, new HashMap<>(),
+                    DatabaseConnection.getInstance(databaseStringTextField.getText()).getConnection());
 
             JasperExportManager.exportReportToHtmlFile(jasperPrint, reportHtmlDestFile);
             StringBuilder contentBuilder = new StringBuilder();
@@ -199,20 +204,6 @@ public class MainController {
         } catch (JRException e) {
             e.printStackTrace();
         }
-    }
-
-    private void setHTMLContent() {
-        StringBuilder contentBuilder = new StringBuilder();
-        try (BufferedReader in = new BufferedReader(new FileReader(FilePath.HMTL_DEST_FILE_NAME.getFullPath()))) {
-            String str;
-            while ((str = in.readLine()) != null) {
-                contentBuilder.append(str);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String content = contentBuilder.toString();
-        htmlEditor.setHtmlText(content);
     }
 
     private void downloadJRXML() {

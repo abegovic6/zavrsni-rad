@@ -5,10 +5,12 @@ import ba.unsa.etf.zavrsnirad.dto.JRXMLColumn;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.*;
+import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.*;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -112,9 +114,6 @@ public class JRXMLCreatorFromSQL {
                                 if (event.isEndElement()) {
                                     name = event.asEndElement().getName().getLocalPart();
                                     if(Objects.equals(name, JRXMLUtils.TITLE)) {
-//                                        if(ReportData.getReportSubtitle() != null) {
-//                                            eve
-//                                        }
                                         break;
                                     }
                                 }
@@ -223,7 +222,9 @@ public class JRXMLCreatorFromSQL {
                         new JRXMLAttribute("style", ReportData.getReportTitleStyleName()),
                         new JRXMLAttribute("x", String.valueOf(0)),
                         new JRXMLAttribute("y", String.valueOf(0)),
-                        new JRXMLAttribute("width", String.valueOf(555)),
+                        new JRXMLAttribute("backcolor", JRXMLUtils.TITLE_COLOR),
+                        new JRXMLAttribute("mode", "Opaque"),
+                        new JRXMLAttribute("width", String.valueOf(JRXMLUtils.PAGE_SIZE)),
                         new JRXMLAttribute("height", String.valueOf(79))
                 ),
                 xmlEventFactory);
@@ -237,7 +238,8 @@ public class JRXMLCreatorFromSQL {
                         new JRXMLAttribute("style", ReportData.getReportSubTitleStyleName()),
                         new JRXMLAttribute("x", String.valueOf(0)),
                         new JRXMLAttribute("y", String.valueOf(0)),
-                        new JRXMLAttribute("width", String.valueOf(555)),
+                        new JRXMLAttribute("backcolor", JRXMLUtils.TITLE_COLOR),
+                        new JRXMLAttribute("width", String.valueOf(JRXMLUtils.PAGE_SIZE)),
                         new JRXMLAttribute("height", String.valueOf(40))
                 ),
                 xmlEventFactory);
@@ -259,19 +261,53 @@ public class JRXMLCreatorFromSQL {
 
     private XMLEvent createStyleElements(String title, String subtitle, List<JRXMLColumn> columns, XMLEvent event, XMLEventWriter writer) throws XMLStreamException {
         if(title != null) {
-            event = createStyleElement(event, writer, ReportData.getReportTitleStyleName());
+            var iterator
+                    = JRXMLAttribute.generateAttributes(List.of(
+                            new JRXMLAttribute("name", ReportData.getReportTitleStyleName()),
+                            new JRXMLAttribute("hTextAlign", "Center"),
+                            new JRXMLAttribute("backcolor", JRXMLUtils.TITLE_COLOR),
+                            new JRXMLAttribute("fontSize", "36"),
+                            new JRXMLAttribute("isBold", "true")
+                           ),
+                    xmlEventFactory);
+            event = createStyleElement(event, writer, iterator);
             writer.add(event);
         }
 
         if(subtitle != null) {
-            event = createStyleElement(event, writer, ReportData.getReportSubTitleStyleName());
+            var iterator
+                    = JRXMLAttribute.generateAttributes(List.of(
+                            new JRXMLAttribute("name", ReportData.getReportSubTitleStyleName()),
+                            new JRXMLAttribute("hTextAlign", "Right"),
+                            new JRXMLAttribute("backcolor", JRXMLUtils.SUBTITLE_COLOR),
+                            new JRXMLAttribute("fontSize", "18"),
+                            new JRXMLAttribute("isItalic", "true"),
+                            new JRXMLAttribute("isBold", "true")
+                    ),
+                    xmlEventFactory);
+            event = createStyleElement(event, writer, iterator);
             writer.add(event);
         }
 
         for(var column : columns) {
-            event = createStyleElement(event, writer, "header_" + column.getColumnName());
+            var iteratorHeader
+                    = JRXMLAttribute.generateAttributes(List.of(
+                            new JRXMLAttribute("name", "header_" + column.getColumnName()),
+                            new JRXMLAttribute("hTextAlign", "Center"),
+                            new JRXMLAttribute("fontSize", "12"),
+                            new JRXMLAttribute("isBold", "true")
+                    ),
+                    xmlEventFactory);
+            event = createStyleElement(event, writer, iteratorHeader);
             writer.add(event);
-            event = createStyleElement(event, writer, "detail_" + column.getColumnName());
+            var iteratorDetail
+                    = JRXMLAttribute.generateAttributes(List.of(
+                            new JRXMLAttribute("name","detail_" + column.getColumnName()),
+                            new JRXMLAttribute("hTextAlign", "Center"),
+                            new JRXMLAttribute("fontSize", "12")
+                    ),
+                    xmlEventFactory);
+            event = createStyleElement(event, writer, iteratorDetail);
             writer.add(event);
         }
 
@@ -280,13 +316,9 @@ public class JRXMLCreatorFromSQL {
         return event;
     }
 
-    private XMLEvent createStyleElement(XMLEvent event, XMLEventWriter writer, String styleName) throws XMLStreamException {
+    private XMLEvent createStyleElement(XMLEvent event, XMLEventWriter writer, Iterator<? extends Attribute> iterator) throws XMLStreamException {
         if(event.isEndElement()) {
             EndElement oldEndElement = event.asEndElement();
-            var iterator
-                    = JRXMLAttribute.generateAttributes(List.of(
-                            new JRXMLAttribute("name", styleName)),
-                    xmlEventFactory);
 
             StartElement newStartStyleHeaderElement
                     = xmlEventFactory.createStartElement(new QName(JRXMLUtils.STYLE), iterator, oldEndElement.getNamespaces());
@@ -295,10 +327,6 @@ public class JRXMLCreatorFromSQL {
             return xmlEventFactory.createEndElement(new QName(JRXMLUtils.STYLE), newStartStyleHeaderElement.getNamespaces());
         } else {
             StartElement oldStartEvent = event.asStartElement();
-            var iterator
-                    = JRXMLAttribute.generateAttributes(List.of(
-                            new JRXMLAttribute("name", styleName)),
-                    xmlEventFactory);
 
             StartElement newStartStyleHeaderElement
                     = xmlEventFactory.createStartElement(new QName(JRXMLUtils.STYLE), iterator, oldStartEvent.getNamespaces());
@@ -343,7 +371,7 @@ public class JRXMLCreatorFromSQL {
                         new JRXMLAttribute("x", String.valueOf(x)),
                         new JRXMLAttribute("y", String.valueOf(3)),
                         new JRXMLAttribute("width", String.valueOf(width)),
-                        new JRXMLAttribute("height", String.valueOf(15)),
+                        new JRXMLAttribute("height", String.valueOf(18)),
                         new JRXMLAttribute("isPrintWhenDetailOverflows", "true")
                 ),
                 xmlEventFactory);
@@ -361,7 +389,7 @@ public class JRXMLCreatorFromSQL {
                         new JRXMLAttribute("x", String.valueOf(x)),
                         new JRXMLAttribute("y", String.valueOf(0)),
                         new JRXMLAttribute("width", String.valueOf(width)),
-                        new JRXMLAttribute("height", String.valueOf(15)),
+                        new JRXMLAttribute("height", String.valueOf(18)),
                         new JRXMLAttribute("isPrintWhenDetailOverflows", "true")
                 ),
                 xmlEventFactory);

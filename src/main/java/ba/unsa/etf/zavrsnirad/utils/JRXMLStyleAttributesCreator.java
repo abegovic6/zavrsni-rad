@@ -42,7 +42,6 @@ public class JRXMLStyleAttributesCreator {
                 case CSS_FONT -> newJrxmlAttributeList.add(fontAttribute(jrxmlAttribute.getValue()));
                 case CSS_TEXT_DECORATION -> newJrxmlAttributeList.addAll(textDecorationAttributes(jrxmlAttribute.getValue()));
                 case CSS_COLOR -> newJrxmlAttributeList.add(colorAttribute(jrxmlAttribute.getValue()));
-                case CSS_BACKGROUND_COLOR -> newJrxmlAttributeList.add(backgorundColorAttribute(jrxmlAttribute.getValue()));
                 case CSS_HORIZONTAL_ALIGNMENT -> newJrxmlAttributeList.add(horizontalAttribute(jrxmlAttribute.getValue()));
                 case CSS_BOLD -> newJrxmlAttributeList.add(boldAttribute());
                 case CSS_ITALIC -> newJrxmlAttributeList.add(italicAttribute());
@@ -53,12 +52,12 @@ public class JRXMLStyleAttributesCreator {
 
     private static JRXMLAttribute fontSizeAttribute(String value) {
         int fontSize = switch (value) {
-            case "x-small" -> 8;
-            case "small" -> 10;
-            case "large" -> 14;
-            case "x-large" -> 18;
-            case "xx-large" -> 24;
-            case "-webkit-xxx-large" -> 36;
+            case "x-small", "8px" -> 8;
+            case "small", "10px" -> 10;
+            case "large", "14px" -> 14;
+            case "x-large", "18px" -> 18;
+            case "xx-large", "24px" -> 24;
+            case "-webkit-xxx-large", "36px" -> 36;
             default -> 12;
         };
         return new JRXMLAttribute(JRXML_FONT_SIZE, String.valueOf(fontSize));
@@ -94,9 +93,9 @@ public class JRXMLStyleAttributesCreator {
         return new JRXMLAttribute(JRXML_COLOR, parse(value));
     }
 
-    private static JRXMLAttribute backgorundColorAttribute(String value) {
-        return new JRXMLAttribute(JRXML_BACKGROUND_COLOR, parse(value).toString());
-    }
+//    private static JRXMLAttribute backgorundColorAttribute(String value) {
+//        return new JRXMLAttribute(JRXML_BACKGROUND_COLOR, parse(value));
+//    }
 
     private static Collection<? extends JRXMLAttribute> textDecorationAttributes(String value) {
         List<JRXMLAttribute> jrxmlAttributeList = new ArrayList<>();
