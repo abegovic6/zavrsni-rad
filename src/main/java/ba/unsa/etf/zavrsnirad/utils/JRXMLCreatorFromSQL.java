@@ -5,12 +5,10 @@ import ba.unsa.etf.zavrsnirad.dto.JRXMLColumn;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.*;
-import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.*;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -66,7 +64,7 @@ public class JRXMLCreatorFromSQL {
         return outCopy;
     }
 
-    public JRXMLCreatorFromSQL createJRXML() throws FileNotFoundException, XMLStreamException {
+    public void createJRXML() throws FileNotFoundException, XMLStreamException {
         FileInputStream fis = new FileInputStream(in);
         FileOutputStream fos = new FileOutputStream(out);
         XMLEventReader parser = xif.createXMLEventReader(fis);
@@ -83,8 +81,12 @@ public class JRXMLCreatorFromSQL {
                         event = addQueryElement(event, writer, ReportData.getReportQuery()).asEndElement();
                         writer.add(event);
                         for (int i = 0; i < ReportData.getReportColumns().size(); i++) {
-                            event = createField(event, writer, ReportData.getReportColumns().get(i).getColumnName(), ReportData.getReportColumns().get(i).getColumnType());
-                            if(i != ReportData.getReportColumns().size() - 1 || ReportData.getReportTitle() != null)
+                            event = createField(event, writer,
+                                    ReportData.getReportColumns().get(i).getColumnName(),
+                                    ReportData.getReportColumns().get(i).getColumnType());
+                            if(i != ReportData.getReportColumns().size() - 1 ||
+                                    ReportData.getReportTitle() != null ||
+                                    ReportData.getReportSubtitle() != null)
                                 writer.add(event);
                         }
 
@@ -110,6 +112,9 @@ public class JRXMLCreatorFromSQL {
                                 if (event.isEndElement()) {
                                     name = event.asEndElement().getName().getLocalPart();
                                     if(Objects.equals(name, JRXMLUtils.TITLE)) {
+//                                        if(ReportData.getReportSubtitle() != null) {
+//                                            eve
+//                                        }
                                         break;
                                     }
                                 }
@@ -206,11 +211,9 @@ public class JRXMLCreatorFromSQL {
             fos.close();
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         } finally {
             closeConnections(fis, fos, parser, writer);
         }
-        return this;
 
     }
 

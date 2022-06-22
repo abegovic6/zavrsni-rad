@@ -1,5 +1,6 @@
 package ba.unsa.etf.zavrsnirad.dump;
 
+import ba.unsa.etf.zavrsnirad.utils.FilePath;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.view.JasperViewer;
 
@@ -10,7 +11,7 @@ import java.util.HashMap;
 
 public class PrintReport extends JFrame {
     public static void showReport(Connection conn) throws JRException {
-        String reportSrcFile = "C:/Users/pp/Desktop/destination.jrxml";
+        String reportSrcFile = FilePath.FINAL_FILE_NAME.getFullPath();
 
         JasperReport jasperReport = JasperCompileManager.compileReport(reportSrcFile);
         // Fields for resources path

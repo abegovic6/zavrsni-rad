@@ -21,7 +21,7 @@
                </image></ImageView>
          </children>
       </VBox>
-      <VBox alignment="CENTER" spacing="10.0" style="-fx-background-color: #ffffff;">
+      <VBox fx:id="mainVBox" alignment="CENTER" spacing="10.0" style="-fx-background-color: #ffffff;">
          <children>
             <Label text="%startTitle">
                <font>

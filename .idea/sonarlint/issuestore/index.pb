@@ -18,5 +18,9 @@ m
 =src/main/java/ba/unsa/etf/zavrsnirad/dump/MainController.java,f\c\fc632cdd9ead0414187241b5c1cff600c9d730d4
 p
 @src/main/java/ba/unsa/etf/zavrsnirad/utils/MyResourceBundle.java,8\6\86e194959c1a32bc66d17d16bed2310210ddf5f8
+l
+<src/main/java/ba/unsa/etf/zavrsnirad/dto/JRXMLAttribute.java,5\8\585872d83829b41e5e15bf2493f808f816ae1e0d
 h
-8src/main/java/ba/unsa/etf/zavrsnirad/utils/FilePath.java,6\5\652733f4b1b1ad5df947bbb5ba11c655435e50c6
+8src/main/java/ba/unsa/etf/zavrsnirad/dto/JRXMLTypes.java,e\b\eb4bb39f67020b3ad19f69f907fa6cdd377bd12e
+7
+pom.xml,4\4\442292b8a7efeabbe4cc176709b833b1792140ec

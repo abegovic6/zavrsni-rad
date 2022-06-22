@@ -10,26 +10,17 @@
               pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20"
               topMargin="20" bottomMargin="20">
 
-    <!-- Parameters -->
     <parameter name="queryStringPar" class="java.lang.String"/>
-
-    <!-- Query string -->
-<!--    <queryString>-->
-<!--        <![CDATA[SELECT country as col1, name as col2 FROM city]]>-->
-<!--    </queryString>-->
-
-
-<!--    &lt;!&ndash; Fields &ndash;&gt;-->
-<!--    <field name="col1" class="java.lang.String">-->
-<!--        <fieldDescription><![CDATA[]]></fieldDescription>-->
-<!--    </field>-->
-<!--    <field name="col2" class="java.lang.String">-->
-<!--        <fieldDescription><![CDATA[]]></fieldDescription>-->
-<!--    </field>-->
-
     <title>
         <band height="79" splitType="Stretch">
-
+<!--            <staticText>-->
+<!--                <reportElement mode="Opaque" x="0" y="0" width="535" height="79" backcolor="#BE92A2"/>-->
+<!--                <box>-->
+<!--                    <bottomPen lineWidth="0.25" lineColor="#BE92A2"/>-->
+<!--                </box>-->
+<!--                <textElement/>-->
+<!--                <text><![CDATA[]]> </text>-->
+<!--            </staticText>-->
         </band>
     </title>
     <pageHeader>
@@ -39,7 +30,7 @@
     <columnHeader>
         <band height="30">
 <!--            <staticText>-->
-<!--                <reportElement mode="Opaque" x="0" y="0" width="535" height="14" backcolor="#E5ECF9"/>-->
+<!--                <reportElement mode="Opaque" x="0" y="0" width="535" height="30" backcolor="#BE92A2"/>-->
 <!--                <box>-->
 <!--                    <bottomPen lineWidth="0.25" lineColor="#CCCCCC"/>-->
 <!--                </box>-->
@@ -50,14 +41,14 @@
     </columnHeader>
     <detail>
         <band height="20">
-<!--            <staticText>-->
-<!--                <reportElement mode="Opaque" x="0" y="0" width="535" height="14" backcolor="#E5ECF9"/>-->
-<!--                <box>-->
-<!--                    <bottomPen lineWidth="0.25" lineColor="#CCCCCC"/>-->
-<!--                </box>-->
-<!--                <textElement/>-->
-<!--                <text><![CDATA[]]> </text>-->
-<!--            </staticText>-->
+            <staticText>
+                <reportElement mode="Opaque" x="0" y="0" width="535" height="14" backcolor="#E5ECF9"/>
+                <box>
+                    <bottomPen lineWidth="0.25" lineColor="#CCCCCC"/>
+                </box>
+                <textElement/>
+                <text><![CDATA[]]> </text>
+            </staticText>
         </band>
     </detail>
     <columnFooter>
