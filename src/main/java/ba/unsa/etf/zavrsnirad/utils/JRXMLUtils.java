@@ -15,7 +15,7 @@ import java.util.List;
 
 public class JRXMLUtils {
 
-    public static final String TITLE_COLOR = "#B0E298";
+    public static String TITLE_COLOR = "#B0E298";
     public static final String SUBTITLE_COLOR = "#ffffff";
     public static final int PAGE_SIZE = 535;
 
@@ -207,5 +207,9 @@ public class JRXMLUtils {
 
     public static int getWidth(int arrayLength) {
         return PAGE_SIZE / arrayLength;
+    }
+
+    public static void setTitleColor(String titleColor) {
+        TITLE_COLOR = titleColor;
     }
 }

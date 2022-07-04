@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 
-public class JRXMLCreatorFromSQL {
+public class JRXMLCreatorFromReportData {
 
 
     private final File in;
@@ -24,7 +24,7 @@ public class JRXMLCreatorFromSQL {
     private final XMLEventFactory xmlEventFactory = XMLEventFactory.newInstance();
     private final XMLOutputFactory xof = XMLOutputFactory.newInstance();
 
-    public JRXMLCreatorFromSQL(String sourceFilePath, String destFilePath) throws IOException, XMLStreamException {
+    public JRXMLCreatorFromReportData(String sourceFilePath, String destFilePath) throws IOException, XMLStreamException {
         xif =
                 (XMLInputFactory.class.getClassLoader() == null) ?
                         XMLInputFactory.newInstance() :

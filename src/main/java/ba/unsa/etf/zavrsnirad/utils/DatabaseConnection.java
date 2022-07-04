@@ -8,26 +8,17 @@ import java.util.Objects;
 public class DatabaseConnection {
     private static DatabaseConnection instance = null;
     private Connection connection;
-    private static String connectionString;
 
-    private DatabaseConnection () {
-        try {
-            if(connectionString == null)
-                connection = DriverManager.getConnection("jdbc:sqlite:projectdatab");
-            else
-                connection = DriverManager.getConnection(connectionString);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+    private DatabaseConnection () throws SQLException {
+        if(ReportData.getDatabaseConnectionString() == null)
+            connection = DriverManager.getConnection("jdbc:sqlite:projectdatabase.db");
+        else
+            connection = DriverManager.getConnection("jdbc:sqlite:" + ReportData.getDatabaseConnectionString());
     }
 
     // METHODS FOR DATABASE
-    public static DatabaseConnection getInstance(String newConnectionString) {
-        if(!Objects.equals(newConnectionString, connectionString)) {
-            connectionString = newConnectionString;
-            instance = new DatabaseConnection ();
-        }
-        else if(instance == null) instance = new DatabaseConnection ();
+    public static DatabaseConnection getInstance() throws SQLException {
+        if(instance == null) instance = new DatabaseConnection ();
         return instance;
     }
 

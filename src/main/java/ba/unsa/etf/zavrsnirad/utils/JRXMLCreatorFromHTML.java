@@ -356,8 +356,8 @@ public class JRXMLCreatorFromHTML {
         StartElement titleStartElement
                 = xmlEventFactory.createStartElement(QName.valueOf(JRXMLUtils.PAGE_HEADER), null, oldStartElement.getNamespaces());
         writer.add(titleStartElement);
-
-        int height = calculateHeight(elements.stream().filter(e -> e.getJrxmlType().equals(JRXMLTypes.JRXML_PAGE_HEADER)).toList());
+        var list = elements.stream().filter(e -> e.getJrxmlType().equals(JRXMLTypes.JRXML_PAGE_HEADER)).toList();
+        int height = calculateHeight(list);
         event = createStaticText(writer, titleStartElement, height, JRXMLTypes.JRXML_PAGE_HEADER);
         writer.add(event);
 
@@ -376,8 +376,12 @@ public class JRXMLCreatorFromHTML {
         StartElement bandStartElement
                 = xmlEventFactory.createStartElement(QName.valueOf(JRXMLUtils.BAND), iterator, titleStartElement.getNamespaces());
         writer.add(bandStartElement);
+        var list = elements.stream().filter(e -> e.getJrxmlType().equals(type)).toList();
+        if(list.isEmpty()) {
+            return xmlEventFactory.createEndElement(QName.valueOf(JRXMLUtils.BAND), bandStartElement.getNamespaces());
+        }
         var staticEvent = createAllStaticFieldsForElement(bandStartElement, writer,
-                elements.stream().filter(e -> e.getJrxmlType().equals(type)).toList());
+                list);
         writer.add(staticEvent);
         if(staticEvent.isStartElement()) {
             return xmlEventFactory.createEndElement(QName.valueOf(JRXMLUtils.BAND), staticEvent.asStartElement().getNamespaces());

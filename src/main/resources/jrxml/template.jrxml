@@ -66,9 +66,5 @@
             </textField>
         </band>
     </pageFooter>
-    <summary>
-        <band height="50">
-        </band>
-    </summary>
 
 </jasperReport>

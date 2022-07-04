@@ -70,7 +70,7 @@ public class JRXMLStyleAttributesCreator {
 
 
 
-    private static String parse(String input)
+    public static String parse(String input)
     {
         Pattern c = Pattern.compile("rgb *\\( *([0-9]+), *([0-9]+), *([0-9]+) *\\)");
         Matcher m = c.matcher(input);

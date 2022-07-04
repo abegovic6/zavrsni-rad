@@ -5,46 +5,58 @@ import ba.unsa.etf.zavrsnirad.dto.JRXMLColumn;
 import java.util.List;
 
 public class ReportData {
-    private static String REPORT_TITLE;
-    private static String REPORT_SUBTITLE;
-    private static List<JRXMLColumn> REPORT_COLUMNS;
-    private static String REPORT_QUERY;
+    private static String reportTitle;
+    private static String reportSubtitle;
+    private static List<JRXMLColumn> reportColumns;
+    private static String reportQuery;
+    private static String databaseConnectionString;
+
+    private ReportData() {
+    }
 
     public static String getReportTitle() {
-        return REPORT_TITLE;
+        return reportTitle;
     }
 
     public static void setReportTitle(String reportTitle) {
-        REPORT_TITLE = reportTitle;
+        ReportData.reportTitle = reportTitle;
     }
 
     public static String getReportTitleStyleName() {
-        return "title_" + REPORT_TITLE;
+        return "title_" + reportTitle.replace(' ', '_');
     }
 
     public static String getReportSubtitle() {
-        return REPORT_SUBTITLE;
+        return reportSubtitle;
     }
 
     public static void setReportSubtitle(String reportSubtitle) {
-        REPORT_SUBTITLE = reportSubtitle;
+        ReportData.reportSubtitle = reportSubtitle;
     }
 
-    public static String getReportSubTitleStyleName() { return  "subtitle_" + REPORT_SUBTITLE; }
+    public static String getReportSubTitleStyleName() { return  "subtitle_" + reportSubtitle.replace(' ', '_'); }
 
     public static List<JRXMLColumn> getReportColumns() {
-        return REPORT_COLUMNS;
+        return reportColumns;
     }
 
     public static void setReportColumns(List<JRXMLColumn> reportColumns) {
-        REPORT_COLUMNS = reportColumns;
+        ReportData.reportColumns = reportColumns;
     }
 
     public static String getReportQuery() {
-        return REPORT_QUERY;
+        return reportQuery;
     }
 
     public static void setReportQuery(String reportQuery) {
-        REPORT_QUERY = reportQuery;
+        ReportData.reportQuery = reportQuery;
+    }
+
+    public static String getDatabaseConnectionString() {
+        return databaseConnectionString;
+    }
+
+    public static void setDatabaseConnectionString(String databaseConnectionString) {
+        ReportData.databaseConnectionString = databaseConnectionString;
     }
 }

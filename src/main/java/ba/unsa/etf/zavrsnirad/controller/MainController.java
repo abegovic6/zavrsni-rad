@@ -12,13 +12,16 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.web.HTMLEditor;
 import javafx.stage.FileChooser;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.util.JRLoader;
+import org.apache.commons.io.FilenameUtils;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
+import java.lang.reflect.Field;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,79 +41,146 @@ public class MainController {
     @FXML
     public HTMLEditor htmlEditor;
 
+    private DatabaseConnection databaseConnection;
+
     public void next() {
-        var backup = new ArrayList<>(vbox.getChildren());
-        vbox.getChildren().clear();
-        var children = new ArrayList<Node>();
-        Label titleLabel = new Label(MyResourceBundle.getResourceBundle().getString("titleTextField"));
-        children.add(titleLabel);
-        TextField titleTextField = new TextField();
-        children.add(titleTextField);
-
-        Label subtitleLabel = new Label(MyResourceBundle.getResourceBundle().getString("subtitleTextField"));
-        children.add(subtitleLabel);
-        TextField subtitleTextField = new TextField();
-        children.add(subtitleTextField);
-
-
-        Button back = new Button(MyResourceBundle.getResourceBundle().getString("Back"));
-        back.getStyleClass().add("buttonstylesecondary");
-        back.setOnAction((EventHandler<ActionEvent>) event -> {
+        if(checkExceptions()) {
+            var backup = new ArrayList<>(vbox.getChildren());
             vbox.getChildren().clear();
-            vbox.getChildren().addAll(backup);
-        });
-        back.setMaxWidth(Double.MAX_VALUE);
-        back.setPrefWidth(Region.USE_COMPUTED_SIZE);
-        Button next = new Button(MyResourceBundle.getResourceBundle().getString("Next"));
-        next.getStyleClass().add("buttonstyle");
-        next.setOnAction((EventHandler<javafx.event.ActionEvent>) event -> {
-            if(Objects.equals(titleTextField.getText(), ""))
-                ReportData.setReportTitle(null);
-            else
-                ReportData.setReportTitle(titleTextField.getText());
+            var children = new ArrayList<Node>();
+            Label titleLabel = new Label(MyResourceBundle.getResourceBundle().getString("titleTextField"));
+            children.add(titleLabel);
+            TextField titleTextField = new TextField();
+            children.add(titleTextField);
 
-            if (Objects.equals(subtitleTextField.getText(), ""))
-                ReportData.setReportSubtitle(null);
-            else
-                ReportData.setReportSubtitle(subtitleTextField.getText());
+            Label subtitleLabel = new Label(MyResourceBundle.getResourceBundle().getString("subtitleTextField"));
+            children.add(subtitleLabel);
+            TextField subtitleTextField = new TextField();
+            children.add(subtitleTextField);
 
-            ReportData.setReportQuery(sqlQueryTextArea.getText());
-            if(createReport()) {
-                nextWindow();
+            Label colorLabel = new Label(MyResourceBundle.getResourceBundle().getString("changeColor"));
+            children.add(colorLabel);
+            TextField colorText = new TextField();
+            children.add(colorText);
+
+            Button back = new Button(MyResourceBundle.getResourceBundle().getString("Back"));
+            back.getStyleClass().add("buttonstylesecondary");
+            back.setOnAction(event -> {
+                vbox.getChildren().clear();
+                vbox.getChildren().addAll(backup);
+            });
+            back.setMaxWidth(Double.MAX_VALUE);
+            back.setPrefWidth(Region.USE_COMPUTED_SIZE);
+            Button next = new Button(MyResourceBundle.getResourceBundle().getString("Next"));
+            next.getStyleClass().add("buttonstyle");
+            next.setOnAction(event -> {
+                if(Objects.equals(titleTextField.getText(), ""))
+                    ReportData.setReportTitle(null);
+                else
+                    ReportData.setReportTitle(titleTextField.getText());
+
+                if (Objects.equals(subtitleTextField.getText(), ""))
+                    ReportData.setReportSubtitle(null);
+                else
+                    ReportData.setReportSubtitle(subtitleTextField.getText());
+
+                JRXMLUtils.setTitleColor(getHexColor(colorText.getText()));
+
+                if(createReport()) {
+                    nextWindow();
+                }
+
+            });
+            next.setMaxWidth(Double.MAX_VALUE);
+            next.setPrefWidth(Region.USE_COMPUTED_SIZE);
+            next.setDefaultButton(true);
+            children.add(back);
+            children.add(next);
+            vbox.getChildren().addAll(children);
+        }
+
+    }
+
+    private String getHexColor(String color) {
+        try {
+            Color c = Color.web(color);
+            return String.format( "#%02X%02X%02X",
+                    (int)( c.getRed() * 255 ),
+                    (int)( c.getGreen() * 255 ),
+                    (int)( c.getBlue() * 255 ) );
+        } catch (Exception e) {
+            return "#ffffff";
+        }
+
+    }
+
+
+
+    private boolean checkExceptions() {
+        if(databaseStringTextField.getText() == null || databaseStringTextField.getText().equals("")) {
+            Utils.throwAlert("errorTitle", "requiredFieldEmpty", "pleaseAddDatabaseString");
+            return false;
+        }
+        if(sqlQueryTextArea.getText() == null || sqlQueryTextArea.getText().equals("")) {
+            Utils.throwAlert("errorTitle", "requiredFieldEmpty", "pleaseAddSQLQuery");
+            return false;
+        }
+        if(!sqlQueryTextArea.getText().toUpperCase().contains("SELECT")) {
+            Utils.throwAlert("errorTitle", "shouldBeSELECT", "sqlException");
+            return false;
+        }
+        if(!checkFile(databaseStringTextField.getText())) {
+            return false;
+        }
+        ReportData.setDatabaseConnectionString(databaseStringTextField.getText());
+        ReportData.setReportQuery(sqlQueryTextArea.getText());
+        try {
+            databaseConnection = DatabaseConnection.getInstance();
+            Connection connection = databaseConnection.getConnection();
+            try (PreparedStatement preparedStatement = connection.prepareStatement(ReportData.getReportQuery())){
+                ResultSet resultSet = preparedStatement.executeQuery();
+                ResultSetMetaData rsMetaData = resultSet.getMetaData();
+                int count = rsMetaData.getColumnCount();
+                List<JRXMLColumn> jrxmlColumnList = new ArrayList<>();
+                for(int i = 1; i <= count; i++) {
+                    jrxmlColumnList
+                            .add(new JRXMLColumn(rsMetaData.getColumnName(i),
+                                    Utils.getClassName(rsMetaData.getColumnType(i))));
+
+                }
+                ReportData.setReportColumns(jrxmlColumnList);
+            } catch (SQLException throwables) {
+                Utils.throwAlert("errorTitle", "wrongSQL", "sqlException");
+                return false;
             }
+        } catch (SQLException e) {
+            Utils.throwAlert("errorTitle", "cantConnect", "databaseConnectionError");
+            return false;
+        }
 
-        });
-        next.setMaxWidth(Double.MAX_VALUE);
-        next.setPrefWidth(Region.USE_COMPUTED_SIZE);
-        next.setDefaultButton(true);
-        children.add(back);
-        children.add(next);
-        vbox.getChildren().addAll(children);
+        return true;
+    }
+
+    private boolean checkFile(String text) {
+        if(!FilenameUtils.getExtension(text).equals("db")) {
+            Utils.throwAlert("errorTitle", "pathShouldEndInDB", "databaseConnectionError");
+            return false;
+        }
+        if(new File(text).isFile()) {
+            return true;
+        }
+        Utils.throwAlert("errorTitle", "fileDoesNotExist", "databaseConnectionError");
+        return false;
     }
 
     private boolean createReport() {
-        Connection connection = DatabaseConnection.getInstance(databaseStringTextField.getText()).getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(ReportData.getReportQuery())){
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-
+        try {
             String filePath = Objects.requireNonNull(getClass().getResource("/jrxml/template.jrxml")).getFile();
-            JRXMLCreatorFromSQL jrxmlCreatorFromSQL = new JRXMLCreatorFromSQL(filePath, FilePath.JRXML_DESC_FILE_NAME.getFullPath());
+            JRXMLCreatorFromReportData jrxmlCreatorFromReportData = new JRXMLCreatorFromReportData(filePath, FilePath.JRXML_DESC_FILE_NAME.getFullPath());
             //JRXMLCreatorFromSQL jrxmlCreatorFromSQL = new JRXMLCreatorFromSQL(filePath, "C:/Users/pp/Desktop/destination.jrxml");
-            List<JRXMLColumn> jrxmlColumnList = new ArrayList<>();
-            ResultSetMetaData rsMetaData = resultSet.getMetaData();
-            int count = rsMetaData.getColumnCount();
-            for(int i = 1; i<=count; i++) {
-                jrxmlColumnList
-                        .add(new JRXMLColumn(rsMetaData.getColumnName(i), Utils.getClassName(rsMetaData.getColumnType(i))));
 
-            }
-            ReportData.setReportColumns(jrxmlColumnList);
-            jrxmlCreatorFromSQL.createJRXML();
+            jrxmlCreatorFromReportData.createJRXML();
             return true;
-        } catch (SQLException throwables) {
-            Utils.throwAlert("errorTitle", "pleaseTryAgain", "sqlException");
-            return false;
         } catch (XMLStreamException | IOException e) {
             Utils.throwAlert("errorTitle", "pleaseTryAgain", "cantConvert");
             return false;
@@ -120,15 +190,15 @@ public class MainController {
     private void nextWindow() {
         htmlEditor = new HTMLEditor();
         htmlEditor.setPrefHeight(mainVBox.getHeight() * 2 / 3);
-        connectToDatabase();
+
         generateHtmlCodeFromJRXML();
 
-        Button previewJRXML = new Button("Preview JRXML");
+        Button previewJRXML = new Button("Preview report");
         previewJRXML.getStyleClass().add("buttonstyle");
         previewJRXML.setOnAction(event -> {
             if(produceCode()) {
                 try {
-                    PrintReport.showReport(DatabaseConnection.getInstance(databaseStringTextField.getText()).getConnection());
+                    PrintReport.showReport(databaseConnection.getConnection());
                 } catch (JRException e) {
                     e.printStackTrace();
                 }
@@ -159,8 +229,6 @@ public class MainController {
         mainVBox.getChildren().addAll(htmlEditor, buttonVBox);
     }
 
-    private void connectToDatabase() {
-    }
 
     private boolean produceCode() {
         try {
@@ -185,7 +253,7 @@ public class MainController {
 
             JasperPrint jasperPrint
                     = JasperFillManager.fillReport(jasperReport, new HashMap<>(),
-                    DatabaseConnection.getInstance(databaseStringTextField.getText()).getConnection());
+                    databaseConnection.getConnection());
 
             JasperExportManager.exportReportToHtmlFile(jasperPrint, reportHtmlDestFile);
             StringBuilder contentBuilder = new StringBuilder();
