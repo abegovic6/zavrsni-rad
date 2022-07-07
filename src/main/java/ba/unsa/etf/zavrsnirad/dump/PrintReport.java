@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 public class PrintReport extends JFrame {
     public static void showReport(Connection conn) throws JRException {
-        String reportSrcFile = FilePath.FINAL_FILE_NAME.getFullPath();
+        String reportSrcFile = FilePath.FINAL_FILE_NAME.getFilePath();
 
         JasperReport jasperReport = JasperCompileManager.compileReport(reportSrcFile);
         // Fields for resources path

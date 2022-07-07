@@ -31,7 +31,7 @@ public class JRXMLCreatorFromReportData {
                         XMLInputFactory.newInstance(XMLInputFactory.class.getName(),
                                 XMLInputFactory.class.getClassLoader());
         xif.setProperty(XMLInputFactory.IS_COALESCING, Boolean.TRUE);
-        in = createCopyOfTemplate(sourceFilePath, FilePath.JRXML_SRC_FILE_NAME.getFullPath());
+        in = createCopyOfTemplate(sourceFilePath, FilePath.JRXML_SRC_FILE_NAME.getFilePath());
         out = new File(destFilePath);
     }
 

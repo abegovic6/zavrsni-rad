@@ -554,7 +554,6 @@ public class JRXMLCreatorFromHTML {
 
     private void getStyleForDetail() {
         for(var columnHeader : ReportData.getReportColumns()) {
-            System.out.println(columnHeader.getColumnName());
             String styleName = "#" + "detail_" + columnHeader.getColumnName();
             String style = document.select(styleName).attr("style");
             var mainSpan = document.select(styleName).select("span");

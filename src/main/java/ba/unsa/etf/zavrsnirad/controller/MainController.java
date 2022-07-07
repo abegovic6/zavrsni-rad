@@ -18,10 +18,12 @@ import javafx.stage.FileChooser;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.util.JRLoader;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -150,10 +152,12 @@ public class MainController {
                 }
                 ReportData.setReportColumns(jrxmlColumnList);
             } catch (SQLException throwables) {
+                throwables.printStackTrace();
                 Utils.throwAlert("errorTitle", "wrongSQL", "sqlException");
                 return false;
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             Utils.throwAlert("errorTitle", "cantConnect", "databaseConnectionError");
             return false;
         }
@@ -175,13 +179,43 @@ public class MainController {
 
     private boolean createReport() {
         try {
-            String filePath = Objects.requireNonNull(getClass().getResource("/jrxml/template.jrxml")).getFile();
-            JRXMLCreatorFromReportData jrxmlCreatorFromReportData = new JRXMLCreatorFromReportData(filePath, FilePath.JRXML_DESC_FILE_NAME.getFullPath());
+            //String filePath = Objects.requireNonNull(getClass().getClassLoader().getResource("/jrxml/template.jrxml")).getFile();
+
+            File file = null;
+            String resource = "/jrxml/template.jrxml";
+            URL res = getClass().getResource(resource);
+            if (res.getProtocol().equals("jar")) {
+                try {
+                    InputStream input = getClass().getResourceAsStream(resource);
+                    file = File.createTempFile("tempfile", ".jxml");
+                    OutputStream out = new FileOutputStream(file);
+                    int read;
+                    byte[] bytes = new byte[1024];
+
+                    while ((read = input.read(bytes)) != -1) {
+                        out.write(bytes, 0, read);
+                    }
+                    out.close();
+                    file.deleteOnExit();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            } else {
+                //this will probably work in your IDE, but not from a JAR
+                file = new File(res.getFile());
+            }
+
+            if (file != null && !file.exists()) {
+                Utils.throwAlert("errorTitle", "pleaseTryAgain", "cantConvert");
+                return false;
+            }
+            JRXMLCreatorFromReportData jrxmlCreatorFromReportData = new JRXMLCreatorFromReportData(file.getPath(), FilePath.JRXML_DESC_FILE_NAME.getFilePath());
             //JRXMLCreatorFromSQL jrxmlCreatorFromSQL = new JRXMLCreatorFromSQL(filePath, "C:/Users/pp/Desktop/destination.jrxml");
 
             jrxmlCreatorFromReportData.createJRXML();
             return true;
         } catch (XMLStreamException | IOException e) {
+            e.printStackTrace();
             Utils.throwAlert("errorTitle", "pleaseTryAgain", "cantConvert");
             return false;
         }
@@ -233,9 +267,10 @@ public class MainController {
     private boolean produceCode() {
         try {
             new JRXMLCreatorFromHTML(htmlEditor.getHtmlText(),
-                    FilePath.JRXML_DESC_FILE_NAME.getFullPath(), FilePath.FINAL_FILE_NAME.getFullPath());
+                    FilePath.JRXML_DESC_FILE_NAME.getFilePath(), FilePath.FINAL_FILE_NAME.getFilePath());
             return true;
         } catch (XMLStreamException | IOException e) {
+            e.printStackTrace();
             Utils.throwAlert("errorTitle", "pleaseTryAgain", "cantConvert");
             return false;
         }
@@ -244,9 +279,9 @@ public class MainController {
     public void generateHtmlCodeFromJRXML() {
         try {
             // Paths
-            String reportSrcJrxmlFile = FilePath.JRXML_DESC_FILE_NAME.getFullPath();
-            String reportSrcJasperFile = FilePath.JAPSER_SRC_FILE_NAME.getFullPath();
-            String reportHtmlDestFile = FilePath.HMTL_DEST_FILE_NAME.getFullPath();
+            String reportSrcJrxmlFile = FilePath.JRXML_DESC_FILE_NAME.getFilePath();
+            String reportSrcJasperFile = FilePath.JAPSER_SRC_FILE_NAME.getFilePath();
+            String reportHtmlDestFile = FilePath.HMTL_DEST_FILE_NAME.getFilePath();
 
             JasperCompileManager.compileReportToFile(reportSrcJrxmlFile, reportSrcJasperFile);
             JasperReport jasperReport = (JasperReport) JRLoader.loadObjectFromFile(reportSrcJasperFile);
@@ -283,7 +318,7 @@ public class MainController {
 
         if(output == null) return;
         try {
-            File input = new File(FilePath.FINAL_FILE_NAME.getFullPath());
+            File input = new File(FilePath.FINAL_FILE_NAME.getFilePath());
             copyContent(input, output);
         } catch (Exception e) {
             e.printStackTrace();

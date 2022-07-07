@@ -20,7 +20,7 @@ public enum FilePath {
     }
 
     public static String getDirectory() {
-        return Objects.requireNonNull(FilePath.class.getResource("/tmp/")).getFile();
+        return Objects.requireNonNull(FilePath.class.getResourceAsStream("/tmp/")).toString();
     }
 
     public String getFullPath() {

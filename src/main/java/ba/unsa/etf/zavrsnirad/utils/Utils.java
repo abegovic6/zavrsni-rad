@@ -8,21 +8,27 @@ import java.sql.*;
 public class Utils {
 
     public static String getClassName(int classType) {
-        return switch (classType) {
-            case 2003 -> Array.class.getName();
-            case 2004 -> Blob.class.getName();
-            case 15 -> Boolean.class.getName();
-            case 1 -> Character.class.getName();
-            case 2005 -> Clob.class.getName();
-            case 91 -> Date.class.getName();
-            case 8, 3, 2 -> Double.class.getName();
-            case 6 -> Float.class.getName();
-            case -7, 4, 5, -5 -> Integer.class.getName();
-            case 0 -> ObjectUtils.Null.class.getName();
-            case 93, 2014 -> Timestamp.class.getName();
-            case 92 -> Time.class.getName();
-            default -> String.class.getName();
-        };
+        switch (classType) {
+            case 2003: return Array.class.getName();
+            case 2004: return Blob.class.getName();
+            case 15: return Boolean.class.getName();
+            case 1: return Character.class.getName();
+            case 2005: return Clob.class.getName();
+            case 91: return Date.class.getName();
+            case 8: return  Double.class.getName();
+            case 3: return  Double.class.getName();
+            case 2: return  Double.class.getName();
+            case 6: return Float.class.getName();
+            case -7: return Integer.class.getName();
+            case -5: return Integer.class.getName();
+            case 4: return Integer.class.getName();
+            case 5: return Integer.class.getName();
+            case 0: return ObjectUtils.Null.class.getName();
+            case 2014: return Timestamp.class.getName();
+            case 93: return Timestamp.class.getName();
+            case 92: return Time.class.getName();
+            default: return String.class.getName();
+        }
     }
 
     public static void throwAlert(String titleKey, String headerKey, String contentTextKey) {

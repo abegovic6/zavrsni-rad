@@ -38,28 +38,83 @@ public class JRXMLStyleAttributesCreator {
         List<JRXMLAttribute> newJrxmlAttributeList = new ArrayList<>();
         for (var jrxmlAttribute : jrxmlAttributeList) {
             switch (jrxmlAttribute.getId()) {
-                case CSS_FONT_SIZE -> newJrxmlAttributeList.add(fontSizeAttribute(jrxmlAttribute.getValue()));
-                case CSS_FONT -> newJrxmlAttributeList.add(fontAttribute(jrxmlAttribute.getValue()));
-                case CSS_TEXT_DECORATION -> newJrxmlAttributeList.addAll(textDecorationAttributes(jrxmlAttribute.getValue()));
-                case CSS_COLOR -> newJrxmlAttributeList.add(colorAttribute(jrxmlAttribute.getValue()));
-                case CSS_HORIZONTAL_ALIGNMENT -> newJrxmlAttributeList.add(horizontalAttribute(jrxmlAttribute.getValue()));
-                case CSS_BOLD -> newJrxmlAttributeList.add(boldAttribute());
-                case CSS_ITALIC -> newJrxmlAttributeList.add(italicAttribute());
+                case CSS_FONT_SIZE: {
+                    newJrxmlAttributeList.add(fontSizeAttribute(jrxmlAttribute.getValue()));
+                    break;
+                }
+                case CSS_FONT: {
+                    newJrxmlAttributeList.add(fontAttribute(jrxmlAttribute.getValue()));
+                    break;
+                }
+                case CSS_TEXT_DECORATION: {
+                    newJrxmlAttributeList.addAll(textDecorationAttributes(jrxmlAttribute.getValue()));
+                    break;
+                }
+                case CSS_COLOR: {
+                    newJrxmlAttributeList.add(colorAttribute(jrxmlAttribute.getValue()));
+                    break;
+                }
+                case CSS_HORIZONTAL_ALIGNMENT: {
+                    newJrxmlAttributeList.add(horizontalAttribute(jrxmlAttribute.getValue()));
+                    break;
+                }
+                case CSS_BOLD: {
+                    newJrxmlAttributeList.add(boldAttribute());
+                    break;
+                }
+                case CSS_ITALIC: {
+                    newJrxmlAttributeList.add(italicAttribute());
+                    break;
+                }
             }
         }
         return newJrxmlAttributeList;
     }
 
     private static JRXMLAttribute fontSizeAttribute(String value) {
-        int fontSize = switch (value) {
-            case "x-small", "8px" -> 8;
-            case "small", "10px" -> 10;
-            case "large", "14px" -> 14;
-            case "x-large", "18px" -> 18;
-            case "xx-large", "24px" -> 24;
-            case "-webkit-xxx-large", "36px" -> 36;
-            default -> 12;
-        };
+        int fontSize;
+        switch (value) {
+            case "x-small":
+                fontSize = 8;
+                break;
+            case "8px":
+                fontSize = 8;
+                break;
+            case "10px":
+                fontSize = 10;
+                break;
+            case "small" :
+                fontSize = 10;
+                break;
+            case "14px":
+                fontSize = 14;
+                break;
+            case "large":
+                fontSize = 14;
+                break;
+            case "18px":
+                fontSize = 18;
+                break;
+            case "x-large":
+                fontSize = 18;
+                break;
+            case "24px":
+                fontSize = 24;
+                break;
+            case "xx-large":
+                fontSize = 24;
+                break;
+            case "36px":
+                fontSize = 36;
+                break;
+            case "-webkit-xxx-large" :
+                fontSize = 36;
+                break;
+            default: {
+                fontSize = 12;
+                break;
+            }
+        }
         return new JRXMLAttribute(JRXML_FONT_SIZE, String.valueOf(fontSize));
     }
 

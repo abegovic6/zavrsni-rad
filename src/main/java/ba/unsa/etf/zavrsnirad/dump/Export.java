@@ -28,16 +28,31 @@ public class Export {
         boolean html = false;
 
         switch (exportType) {
-            case HTML -> {
+            case HTML: {
                 exporter = new HtmlExporter();
                 exporter.setExporterOutput(new SimpleHtmlExporterOutput(out));
                 html = true;
+                break;
             }
-            case CSV -> exporter = new JRCsvExporter();
-            case XML -> exporter = new JRXmlExporter();
-            case XLSX -> exporter = new JRXlsxExporter();
-            case PDF -> exporter = new JRPdfExporter();
-            default -> throw new IllegalStateException("Unexpected value: " + exportType);
+            case CSV: {
+                exporter = new JRCsvExporter();
+                break;
+            }
+            case XML: {
+                exporter = new JRXmlExporter();
+                break;
+            }
+            case XLSX: {
+                exporter = new JRXlsxExporter();
+                break;
+            }
+            case PDF: {
+                exporter = new JRPdfExporter();
+                break;
+            }
+            default: {
+                throw new IllegalStateException("Unexpected value: " + exportType);
+            }
         }
 
         if (!html) {
